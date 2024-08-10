@@ -1,4 +1,3 @@
-#Coletar dados dos players
 import requests
 import pprint
 import pandas as pd
@@ -83,6 +82,7 @@ class Funcs ():
         filtered_data = []
         for role in matches_info_dict:
             for match, match_data in matches_info_dict[role].items():
+                #print(match, match_data)
                 for p in match_data['info']['participants']:
                     for playerPuuid in teamPuuid:
                         #Validar duplicacoes pois os players podem jogar duo
@@ -98,12 +98,21 @@ class Funcs ():
                                     'totalMinionsKilled': p['totalMinionsKilled'],
                                     'neutralMinionsKilled': p['neutralMinionsKilled'],
                                     'CS': p['totalMinionsKilled'] + p['neutralMinionsKilled'],
+                                    'goldEarned': p['goldEarned'],
+                                    'goldPerMinute': p['challenges']['goldPerMinute'],
                                     'kills': p['kills'],
                                     'deaths': p['deaths'],
                                     'assists': p['assists'],
                                     'kda': p['challenges']['kda'],
+                                    'stealthWardsPlaced': p['challenges']['stealthWardsPlaced'],
+                                    'detectorWardsPlaced': p['detectorWardsPlaced'],
+                                    'visionWardsBoughtInGame': p['visionWardsBoughtInGame'],
+                                    'wardsKilled': p['wardsKilled'],
+                                    'wardsPlaced': p['wardsPlaced'],
+                                    'win': p['win'],
                                     'controlWardsPlaced': p['challenges']['controlWardsPlaced'],
-                                    'visionScore': p['visionScore']
+                                    'visionScore': p['visionScore'],
+                                    'gameDuration': match_data['info']['gameDuration']/60
                             }
                             filtered_data.append(new_entry) 
 
@@ -123,7 +132,7 @@ class Lycan (Funcs):
         self.matches_dict = {}
         self.matches_info_dict = {}
 
-        self.api_key = r"RGAPI-cd38d8fe-ee7b-4bf2-be99-a6e6eb75bdb9"
+        self.api_key = r"RGAPI-7679d25d-de42-4301-a670-38fdf7f94636"
         #puuidCauemo
         self.puuid = r"0ErABkXREc_Do9oOKd7swFlSjDvXRuSRin7eYd74MqRvvHNNh5NUTvYBFyK_Tsl-nhYeb8WEI0LBAQ"
 
@@ -131,16 +140,16 @@ class Lycan (Funcs):
         self.puuidTorras = r"QxuYknHcRhNe02rDWIgqVDOPspQB75sb2-02i2wdOc2HQ72KVyog3jbRshfezhIt6SZVDKYq4uZkhQ"
         self.puuidBerus = r"VwDX_uu6jzS8GKlqfGc0AgzdeiapIw8K7elcahH3gAlxlXE36nURLgt17pTVSrdpbeatcClP3ssYyw"
         self.puiidZkyou = r"qpcgkcTI67-s4-dl0tJZxz4hpVV24ZsDXk45gtPlF7tiDGZ7KhACdv2JBbmSumJEuUhnaEeD19eyZA"
-        self.puuidRobertinho = r"FW_inwTBTgVYkwJpEt2mNQyMlXHQVMlaUd_wy6-FEDFhkJfYSbEeSgyGEkqmkUdOzOrPLzm7pv_fkQ"
-        #Supp
+        self.puuidFaster = r"Bgwwrw9z-PcdIlCcVEvYVm8XPpieAMan7IDagWqChP4ehSEjWZ1TgyNxMs60RA2ppotJKLjAY187ug"
+        self.puuidChuva = r"v9eKwobuBnqqSrKTHeGO2maWM8wcZOnmRcVIlOeCgpXbMTPNzxYwcJ8kqTPMgJ1lv0d9oHT0l8aRyw"
 
         self.teamPuuid = [
             {
                 'Top': self.puuidTorras,
                 'Jungle': self.puuidBerus,
                 'Mid': self.puiidZkyou,
-                'Adc': self.puuidRobertinho,
-                #'Support': 'None'
+                'Adc': self.puuidFaster,
+                'Support': self.puuidChuva
 
             }
         ]
@@ -150,7 +159,7 @@ class Lycan (Funcs):
 
         for player_position in self.teamPuuid:
             for role, puuid in player_position.items():
-                if puuid:  # Verifica se puuid não é None ou uma string vazia
+                if puuid :  # Verifica se puuid não é None ou uma string vazia
                     match_ids = self.get_player_matchv5(puuid, 50, self.api_key, self.timestamp_atual)
                     self.matches_dict[role] = match_ids
 
